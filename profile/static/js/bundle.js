@@ -209,6 +209,7 @@ let myChart;
 let executed;
 
 async function buttonEvents(e) {
+
   const targetArticle = e.target.closest("article");
 
   let dailyTarget = targetArticle.querySelector("p").textContent.split(" ")[2];
@@ -234,7 +235,7 @@ async function buttonEvents(e) {
   if(currentCount + 1 === dailyTarget){
     M.toast({html: 'Well done! You\'ve hit your daily target!'}) 
   }
-
+  
   currentCount++;
 
   helpers.updateTimesCompleted(currentCount, dailyTarget, targetArticle.id);
@@ -261,6 +262,60 @@ async function buttonEvents(e) {
   
   getGraphData();
   updateBadgesToProfile();
+
+}
+
+//added in
+function buttonEventsDown() {
+  console.log('printing length');
+  let badges = document.querySelectorAll('#badge-display img');
+  console.log(badges)
+  let len = badges.length;
+  localStorage.setItem('originalLength', len);
+}
+
+//added in
+async function buttonEventsUp() {
+  console.log('printing length up');
+  let badges = document.querySelectorAll('#badge-display img');
+  console.log(badges)
+  let len = badges.length;
+  localStorage.setItem('newLength', len);
+
+  // async function toastForNewBadge() {
+  //   const userId = localStorage.getItem("userId");
+  //   const response = await fetch(`${serverUrl}/badges/${userId}`);
+  //   const data = await response.json();
+  //   let dataArray = Array.from(data);
+
+  //   uniqueBadgeArray = new Set();
+  //   dataArray.forEach(function(item){
+  //     uniqueBadgeArray.add(item.badge_name);
+  //   });
+
+  //   console.log('printing unwefaw')
+  //   console.log(uniqueBadgeArray);
+
+  //   // let badgesToCompare = document.querySelectorAll('#badge-display img');
+  //   // let arrayBadgesToCompare = Array.from(badgesToCompare);
+  //   // console.log('here')
+  //   // console.log(arrayBadgesToCompare);
+    // localStorage.setItem('badgesToCompare', uniqueBadgeArray.size);
+    // if (uniqueBadgeArray.length > localStorage.getItem('originalLength')){
+    //   M.toast({html: 'Congratulations! You\'ve earnt a new badge!'});
+    // }
+    if(localStorage.getItem('newLength') > localStorage.getItem('originalLength')) {
+      M.toast({html: 'Congratulations! You\'ve earnt a new badge!'});
+    }
+    
+    // for(let i=0; i<data.length; i++){
+    //   if (data[i].badge_names && !(originalDataInstance[i].badge_names)) {
+    //     M.toast({html: 'Congratulations! You\'ve earnt a new badge!'});
+    //   };
+    // };
+  // };
+
+  // toastForNewBadge();
 }
 
 async function removeHabit(e) {
@@ -286,7 +341,9 @@ function bindEventListeners() {
   const addButtons = document.querySelectorAll("#add-to-total");
   const addButtonsArr = Array.from(addButtons);
   addButtonsArr.forEach((button) => {
-    button.addEventListener("click", buttonEvents);
+    button.addEventListener("mousedown", buttonEvents);
+    button.addEventListener("mouseup", buttonEventsUp); //added in
+    button.addEventListener("mousedown", buttonEventsDown); //added in
   });
 
   //===== Remove habit =====//
@@ -483,7 +540,7 @@ async function updateBadgesToProfile() {
 
   const response = await fetch(`${serverUrl}/habits/${userId}`);
   const userData = await response.json();
-
+  
   let totalDone = 0;
   let totalToDo = 0;
 
@@ -534,14 +591,26 @@ async function updateBadgesToProfile() {
   
 }
 
-
+// let originalDataInstance = getBadgeData();
+// async function toastForNewBadge(originalDataInstance) {
+ 
+//   const userId = localStorage.getItem("userId");
+//   const response = await fetch(`${serverUrl}/badges/${userId}`);
+//   const data = await response.json();
+  
+//   // comparing if badge_names is falsy & then truthy to see if new badge has been achieved
+//   for(let i=0; i<data.length; i++){
+//     if (data[i].badge_names && !(originalDataInstance[i].badge_names)) {
+//       M.toast({html: 'Congratulations! You\'ve earnt a new badge!'});
+//     };
+//   };
+// };
+// toastForNewBadge();
 
 async function getBadgeData() {
   const userId = localStorage.getItem("userId");
-
   const response = await fetch(`${serverUrl}/badges/${userId}`);
-  const data = await response.json();
-
+  const data = await response.json();  
   return data;
 }
 
@@ -630,6 +699,4 @@ function showBadgeName(e) {
 
 
 getUserData();
-
-
 },{"./avatars":1,"./helpers":2}]},{},[3]);
